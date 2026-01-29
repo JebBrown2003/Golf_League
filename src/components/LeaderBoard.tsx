@@ -7,7 +7,7 @@ interface LeaderboardProps {
 }
 
 export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
-  const { players, rounds } = useLeagueStore();
+  const { players, rounds, activeWeeks } = useLeagueStore();
   const TOTAL_WEEKS = 6;
   const MISSED_PENALTY = 63;
 
@@ -62,14 +62,21 @@ export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
     <div className="leaderboard">
       <h2>{weekNumber ? `Week ${weekNumber} Leaderboard` : 'Season Leaderboard'}</h2>
 
-      {weekNumber ? (
+      {weekNumber && !activeWeeks.includes(weekNumber) ? (
+        <div className="warning-message">
+          Standings will be available once the commissioner opens Week {weekNumber}.
+        </div>
+      ) : !weekNumber && activeWeeks.length === 0 ? (
+        <div className="warning-message">
+          Season standings will be available once the commissioner opens the first week.
+        </div>
+      ) : weekNumber ? (
         <table className="leaderboard-table">
           <thead>
             <tr>
               <th>Rank</th>
               <th>Player</th>
               <th>Score</th>
-              <th>Status</th>
             </tr>
           </thead>
           <tbody>
@@ -81,9 +88,6 @@ export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
                   {entry.submitted ? entry.score : (
                     <span className="not-submitted">Not Submitted</span>
                   )}
-                </td>
-                <td className="status">
-                  {entry.submitted ? '✓ Submitted' : '⏳ Pending'}
                 </td>
               </tr>
             ))}
@@ -100,13 +104,12 @@ export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
               ))}
               <th className="total-header">Total</th>
               <th>Weeks Completed</th>
-              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {leaderboard.map((entry: any, index) => (
               <tr key={entry.playerId} className={entry.disqualified ? 'disqualified' : ''}>
-                <td className="rank">{entry.disqualified ? 'DQ' : index + 1}</td>
+                <td className="rank">{index + 1}</td>
                 <td className="name">{entry.username}</td>
                 {entry.weeklyScores.map((score: number | null, i: number) => (
                   <td key={`score-${i}`} className="week-score">
@@ -115,15 +118,6 @@ export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
                 ))}
                 <td className="total">{entry.totalScore}</td>
                 <td className="weeks-completed">{TOTAL_WEEKS - entry.missedWeeks}/6</td>
-                <td className="status">
-                  {entry.disqualified ? (
-                    <span className="disqualified-badge">Disqualified</span>
-                  ) : entry.missedWeeks > 0 ? (
-                    <span className="status-caution">⚠ Missed Week</span>
-                  ) : (
-                    <span className="status-good">✓ Good</span>
-                  )}
-                </td>
               </tr>
             ))}
           </tbody>

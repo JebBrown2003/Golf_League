@@ -67,7 +67,7 @@ export const Login: React.FC<AuthProps> = ({ onSuccess }) => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>⛳ PSK Golf League</h1>
+        <h1>PSK Golf League</h1>
         <h2>{isLogin ? 'Login' : 'Create Account'}</h2>
 
         <form onSubmit={isLogin ? handleLogin : handleRegister}>

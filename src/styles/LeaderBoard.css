@@ -25,25 +25,44 @@
 }
 
 .leaderboard-table th {
-  padding: 15px;
-  text-align: left;
+  padding: 15px 12px;
+  text-align: center;
   font-weight: bold;
   font-size: 14px;
+}
+
+.leaderboard-table th:first-child,
+.leaderboard-table td:first-child {
+  text-align: center;
+  width: 60px;
+}
+
+.leaderboard-table th:nth-child(2),
+.leaderboard-table td:nth-child(2) {
+  text-align: left;
+  padding-left: 20px;
 }
 
 .week-header {
   text-align: center !important;
   font-size: 12px;
+  padding: 15px 8px !important;
+  width: 50px;
+  min-width: 50px;
 }
 
 .total-header {
   font-weight: 700;
   font-size: 15px;
+  text-align: center !important;
+  padding: 15px 12px !important;
+  min-width: 70px;
 }
 
 .leaderboard-table td {
-  padding: 12px 15px;
+  padding: 12px;
   border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
 .leaderboard-table tbody tr {
@@ -65,17 +84,21 @@
   font-size: 16px;
   width: 50px;
   text-align: center;
+  min-width: 50px;
 }
 
 .name {
   font-weight: 600;
   color: #333;
+  text-align: left;
+  min-width: 150px;
 }
 
 .score {
   text-align: center;
   font-weight: bold;
   color: #c62828;
+  min-width: 70px;
 }
 
 .not-submitted {
@@ -86,6 +109,9 @@
 .week-score {
   text-align: center;
   font-weight: 500;
+  color: #c62828;
+  padding: 12px 8px;
+  min-width: 45px;
 }
 
 .week-score .missed {
@@ -99,6 +125,7 @@
   background: #fff5f5;
   color: #c62828;
   border-radius: 4px;
+  min-width: 70px;
 }
 
 .missed-weeks {
@@ -111,6 +138,7 @@
   text-align: center;
   font-weight: 600;
   color: #333;
+  min-width: 100px;
 }
 
 .status {

@@ -1,4 +1,4 @@
-# ⛳ PSK Golf League Manager
+# PSK Golf League Manager
 
 A comprehensive web application for managing the PSK Golf League's 6-week competitive golf season at Virginia Tech Campus Course.
 
@@ -17,27 +17,25 @@ A comprehensive web application for managing the PSK Golf League's 6-week compet
 - **Score Locking**: Submissions are locked after deadline (Sunday 11:59 PM) to prevent edits
 
 ### Leaderboard & Standings
-- **Weekly Standings**: Real-time leaderboard showing curre- **Weekly Standings**: Real-time leaderboard showinee- **Weekly Standings**: R weekl- **Weekly Standings**: Real-time leaderboard showing curre- **Weekly Standings**: Real-time leaderboard showinee- **Weekly Staning- * rounds ar- **Weekly Standingibl- **Weekly Standings**: Real-time leaderboard showing curre- **Weekly Standings**: Real-time leaderboard showinee- *- **Weekly Standings**: Real-time leaderboard showing curre- **Weekly Standingor- **Weekly Standings**: Real-time leaderboard show- **Season Management**: Ful- **Weekly Standings**: Real-time leaderboard showing cu1)
 
-### Basic Format
+- **Weekly Standings**: Real-time leaderboard showing placements and scores for the active week.
+- **Season Standings**: Cumulative totals across all weeks; displays total score and **Weeks Completed** (X/6).
+- **Standings Visibility**: Weeks are only visible after a commissioner activates them.
+- **Disqualification**: Players who miss 3 or more weeks are ineligible for season prizes (marked accordingly).
+
+### Format & Rules
+
 - **Season**: 6 weeks
-- **Course**: Virginia Tech 9-Hole Campus Course
+- **Course**: Virginia Tech 9-hole campus course
 - **Format**: Stroke play (9 holes)
-- **Winner**: Lowest cumulative score after 6 weeks
-- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **Bff (- **B- **B- **B- **B- **Subm- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **Bff (- **B- **B- **B- **B- **Subm- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **Bff (- **B- **B- **B- **B- **Subm- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **B- **ow- **B- **Bff (- **B- **B- **B- **B- **Subm- **B- **B- **B- **B- **B- **rd:- **B- **B- **Bse- **B- **B- **B- **Bye- **B- **B- **B- **B- **B- **B- **B- **B- **B- Cl- k "Create Account" to register
-                                                   2. **Declare Your Round (Before Playing)**
-   - Go to "Declare Round" tab
-   - Select the week you're playing
-   - Click "Declare Round"
+- **Missed Round Penalty**: 63 strokes applied for missed weeks
 
-3. **Submit Your Scores (After Playing)**
-   - Navigate to "Submit Scores"
-   - Enter stroke count for each hole
-   - Optional: Add scorecard photo
-   - Click "Submit Scores"
+### How to Use
 
-4. **Check Standings**
-   - View weekly and season leaderboards
+1. Create an account (click **Create Account**).
+2. Declare your round before playing (Declare Round tab).
+3. Submit your scores after playing (Submit Scores tab) — all 9 holes are required.
+4. View weekly and season standings on the Leaderboard.
 
 ### For Commissioners
 

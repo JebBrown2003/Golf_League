@@ -3,7 +3,7 @@ import { useLeagueStore } from '../store/leagueStore';
 import '../styles/CommissionerDashboard.css';
 
 export const CommissionerDashboard: React.FC = () => {
-  const { players, rounds, toggleBuyIn, editScore, lockScore, startWeek, activeWeeks } = useLeagueStore();
+  const { players, rounds, editScore, lockScore, startWeek, activeWeeks } = useLeagueStore();
   const [selectedWeek, setSelectedWeek] = useState(1);
   const [editingRound, setEditingRound] = useState<string | null>(null);
   const [editScores, setEditScores] = useState<{ [hole: number]: number }>({});
@@ -35,7 +35,7 @@ export const CommissionerDashboard: React.FC = () => {
   return (
     <div className="commissioner-dashboard">
       <h2>Commissioner Dashboard</h2>
-      <p className="subtitle">Manage weeks, buy-ins, and scores</p>
+      <p className="subtitle">Manage weeks and scores</p>
 
       <div className="dashboard-section">
         <h3>Week Management</h3>
@@ -60,39 +60,6 @@ export const CommissionerDashboard: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="dashboard-section">
-        <h3>Buy-In Management</h3>
-        <table className="management-table">
-          <thead>
-            <tr>
-              <th>Player</th>
-              <th>Buy-In Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {players.filter((p) => !p.isCommissioner).map((player) => (
-              <tr key={player.id}>
-                <td>{player.name}</td>
-                <td>
-                  <span className={`status ${player.buyInPaid ? 'paid' : 'unpaid'}`}>
-                    {player.buyInPaid ? '✓ Paid' : '✗ Unpaid'}
-                  </span>
-                </td>
-                <td>
-                  <button
-                    onClick={() => toggleBuyIn(player.id)}
-                    className={`toggle-btn ${player.buyInPaid ? 'unpaid-btn' : 'paid-btn'}`}
-                  >
-                    {player.buyInPaid ? 'Mark Unpaid' : 'Mark Paid'}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
 
       <div className="dashboard-section">

@@ -20,7 +20,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-content">
-          <h1>⛳ PSK Golf League</h1>
+          <h1>PSK Golf League</h1>
           <div className="user-info">
             <span className="welcome">Welcome, {currentUser.username}</span>
             {currentUser.isCommissioner && (
