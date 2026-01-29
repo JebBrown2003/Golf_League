@@ -99,7 +99,7 @@ export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
                 <th key={`week-${i + 1}`} className="week-header">W{i + 1}</th>
               ))}
               <th className="total-header">Total</th>
-              <th>Missed</th>
+              <th>Weeks Completed</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -114,12 +114,14 @@ export const LeaderBoard: React.FC<LeaderboardProps> = ({ weekNumber }) => {
                   </td>
                 ))}
                 <td className="total">{entry.totalScore}</td>
-                <td className="missed-weeks">{entry.missedWeeks}</td>
+                <td className="weeks-completed">{TOTAL_WEEKS - entry.missedWeeks}/6</td>
                 <td className="status">
                   {entry.disqualified ? (
                     <span className="disqualified-badge">Disqualified</span>
+                  ) : entry.missedWeeks > 0 ? (
+                    <span className="status-caution">⚠ Missed Week</span>
                   ) : (
-                    <span>Active</span>
+                    <span className="status-good">✓ Good</span>
                   )}
                 </td>
               </tr>

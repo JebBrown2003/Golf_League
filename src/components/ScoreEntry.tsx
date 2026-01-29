@@ -14,6 +14,7 @@ export const ScoreEntry: React.FC<ScoreEntryProps> = ({ onSubmit }) => {
   });
   const [photoUrl, setPhotoUrl] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const weekRound = rounds.find((r) => r.playerId === currentUser?.id && r.week === selectedWeek);
   const isAlreadySubmitted = weekRound?.submitted || false;
@@ -25,8 +26,18 @@ export const ScoreEntry: React.FC<ScoreEntryProps> = ({ onSubmit }) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const allHolesFilled = Object.values(scores).every((score) => score > 0);
+
+  const handleSubmitClick = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!allHolesFilled) {
+      alert('Please fill in all hole scores before submitting.');
+      return;
+    }
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmSubmit = () => {
     if (!currentUser) return;
 
     const allScores = Array.from({ length: 9 }, (_, i) => ({
@@ -36,6 +47,7 @@ export const ScoreEntry: React.FC<ScoreEntryProps> = ({ onSubmit }) => {
 
     submitRound(currentUser.id, selectedWeek, allScores, photoUrl || undefined);
     setSubmitted(true);
+    setShowConfirmation(false);
     setTimeout(() => {
       onSubmit(selectedWeek);
     }, 1000);
@@ -80,7 +92,7 @@ export const ScoreEntry: React.FC<ScoreEntryProps> = ({ onSubmit }) => {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit} className="score-form">
+      <form onSubmit={handleSubmitClick} className="score-form">
         <div className="holes-grid">
           {Array.from({ length: 9 }, (_, i) => i + 1).map((hole) => (
             <div key={hole} className="hole-input">
@@ -120,10 +132,36 @@ export const ScoreEntry: React.FC<ScoreEntryProps> = ({ onSubmit }) => {
           </div>
         )}
 
-        <button type="submit" className="submit-btn" disabled={submitted || totalScore === 0}>
+        <button type="submit" className="submit-btn" disabled={submitted || !allHolesFilled}>
           Submit Scores
         </button>
       </form>
+
+      {showConfirmation && (
+        <div className="confirmation-modal">
+          <div className="confirmation-content">
+            <h3>Confirm Score Submission</h3>
+            <p>You are about to submit your scores for <strong>Week {selectedWeek}</strong></p>
+            <div className="score-preview">
+              <p><strong>Your Total Score: {totalScore} strokes</strong></p>
+              <div className="score-breakdown">
+                {Array.from({ length: 9 }, (_, i) => i + 1).map((hole) => (
+                  <span key={hole} className="hole-preview">H{hole}: {scores[hole]}</span>
+                ))}
+              </div>
+            </div>
+            <p className="confirmation-warning">Are you sure? This cannot be changed.</p>
+            <div className="confirmation-buttons">
+              <button onClick={handleConfirmSubmit} className="confirm-btn">
+                Confirm & Submit
+              </button>
+              <button onClick={() => setShowConfirmation(false)} className="cancel-confirm-btn">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="deadline-info">
         <p className="deadline">⏰ Deadline: Sunday 11:59 PM</p>
