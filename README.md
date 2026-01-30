@@ -57,6 +57,36 @@ A comprehensive web application for managing the PSK Golf League's 6-week compet
 - Vite
 - CSS3
 
+## Optional Cloud Persistence (Firestore)
+
+This project includes optional Firestore integration for realtime persistence. To enable it:
+
+1. Create a Firebase project at https://console.firebase.google.com
+2. Enable Firestore (Native mode) and (optionally) Authentication → Email/Password
+3. Register a Web app and copy the SDK config
+4. Create a local `.env.local` file and add the keys from `.env.example`
+
+Example `.env.local`:
+
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_APP_ID=your_app_id
+
+Once env vars are set, the app will subscribe to `players`, `rounds`, and `weeks` in Firestore and sync changes in realtime.
+
+Seeding demo users (alex/jeb):
+
+- To create demo users and player docs (including setting them as commissioners) you can use the admin seed script.
+- Create a Firebase service account JSON and set the env var:
+  `export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"`
+- Then run:
+  `node scripts/seed_demo_users.js`
+
+Security rules:
+
+- I added starter rules in `firestore.rules` that restrict week activation to commissioners and ensure rounds are written only by their owner (or edited by commissioners). Review and deploy these rules with `firebase deploy --only firestore:rules` when ready.
+
 ## Browser Support
 
 - Chrome/Edge (latest)

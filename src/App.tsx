@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLeagueStore } from './store/leagueStore';
 import { Login } from './components/Login';
 import { RoundDeclaration } from './components/RoundDeclaration';
@@ -6,6 +6,8 @@ import { ScoreEntry } from './components/ScoreEntry';
 import { LeaderBoard } from './components/LeaderBoard';
 import { CommissionerDashboard } from './components/CommissionerDashboard';
 import './App.css';
+import { subscribeRounds, subscribePlayers, subscribeWeeks } from './services/firestore';
+import { onAuthChange, fetchPlayerDoc } from './services/auth';
 
 function App() {
   const { currentUser, logout } = useLeagueStore();
@@ -15,6 +17,50 @@ function App() {
   if (!currentUser) {
     return <Login onSuccess={() => {}} />;
   }
+
+  useEffect(() => {
+    // Only subscribe if Firebase is configured via env
+    if (!import.meta.env.VITE_FIREBASE_PROJECT_ID) return;
+
+    const unsubRounds = subscribeRounds((rounds) => {
+      useLeagueStore.setState({ rounds });
+    });
+
+    const unsubPlayers = subscribePlayers((players) => {
+      useLeagueStore.setState({ players });
+    });
+
+    const unsubWeeks = subscribeWeeks((activeWeeks) => {
+      useLeagueStore.setState({ activeWeeks });
+    });
+
+    return () => {
+      unsubRounds();
+      unsubPlayers();
+      unsubWeeks();
+    };
+  }, []);
+
+  // Auth listener: update currentUser from Firebase Auth
+  useEffect(() => {
+    if (!import.meta.env.VITE_FIREBASE_PROJECT_ID) return;
+    const unsubAuth = onAuthChange(async (user: any) => {
+      if (!user) {
+        useLeagueStore.setState({ currentUser: null });
+        return;
+      }
+      // Fetch players doc for this uid
+      const player = await fetchPlayerDoc(user.uid);
+      useLeagueStore.setState({
+        currentUser: player
+          ? { id: player.id, username: player.username, email: player.email, isCommissioner: player.isCommissioner }
+          : { id: user.uid, username: user.email || '', email: user.email || '', isCommissioner: false },
+      });
+    });
+
+    return () => unsubAuth();
+  }, []);
+
 
   return (
     <div className="app">

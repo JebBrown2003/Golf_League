@@ -1,6 +1,11 @@
 import { create } from 'zustand';
 import type { Player, WeeklyRound, AuthUser } from '../types';
 import { calculateRoundTotal } from '../utils/scoring';
+import {
+  submitRoundToCloud,
+  upsertPlayerToCloud,
+  setWeekActiveInCloud,
+} from '../services/firestore';
 
 interface LeagueState {
   // Auth
@@ -108,19 +113,20 @@ export const useLeagueStore = create<LeagueState>((set, get) => ({
   addPlayer: (username: string, email: string, name: string, password: string, isCommissioner = false) => {
     const newId = `user-${username}`;
     users[username] = { password, email, name, id: newId };
-    set((state) => ({
-      players: [
-        ...state.players,
-        {
-          id: newId,
-          username,
-          email,
-          name,
-          isCommissioner,
-          buyInPaid: false,
-        },
-      ],
-    }));
+    const player = {
+      id: newId,
+      username,
+      email,
+      name,
+      isCommissioner,
+      buyInPaid: false,
+    };
+    set((state) => ({ players: [...state.players, player] }));
+
+    // persist to Firestore
+    upsertPlayerToCloud(player).catch((err) => {
+      console.warn('Failed to upsert player to Firestore', err);
+    });
   },
 
   toggleBuyIn: (playerId: string) => {
@@ -137,46 +143,59 @@ export const useLeagueStore = create<LeagueState>((set, get) => ({
       if (existing) {
         return state;
       }
-      return {
-        rounds: [
-          ...state.rounds,
-          {
-            id: `round-${playerId}-${week}`,
-            playerId,
-            week,
-            declared: true,
-            declaredAt: new Date().toISOString(),
-            holeScores: Array.from({ length: 9 }, (_, i) => ({
-              holeNumber: i + 1,
-              strokes: 0,
-            })),
-            totalScore: 0,
-            submitted: false,
-            locked: false,
-          },
-        ],
+      const newRound = {
+        id: `round-${playerId}-${week}`,
+        playerId,
+        week,
+        declared: true,
+        declaredAt: new Date().toISOString(),
+        holeScores: Array.from({ length: 9 }, (_, i) => ({
+          holeNumber: i + 1,
+          strokes: 0,
+        })),
+        totalScore: 0,
+        submitted: false,
+        locked: false,
       };
+
+      // optimistic local update
+      set({ rounds: [...state.rounds, newRound] });
+
+      // persist to Firestore (best-effort)
+      submitRoundToCloud(newRound).catch((err) => {
+        console.warn('Failed to create round in Firestore', err);
+      });
+
+      return state;
     });
   },
 
   submitRound: (playerId: string, week: number, holeScores: { holeNumber: number; strokes: number }[], photoUrl?: string) => {
     set((state) => {
       const total = calculateRoundTotal(holeScores);
-      return {
-        rounds: state.rounds.map((r) =>
-          r.playerId === playerId && r.week === week
-            ? {
-                ...r,
-                holeScores,
-                totalScore: total,
-                submitted: true,
-                submittedAt: new Date().toISOString(),
-                photoUrl,
-                locked: true,
-              }
-            : r
-        ),
-      };
+      const updated = state.rounds.map((r) =>
+        r.playerId === playerId && r.week === week
+          ? {
+              ...r,
+              holeScores,
+              totalScore: total,
+              submitted: true,
+              submittedAt: new Date().toISOString(),
+              photoUrl,
+              locked: true,
+            }
+          : r
+      );
+
+      // Persist to Firestore (best-effort)
+      const updatedRound = updated.find((r) => r.playerId === playerId && r.week === week);
+      if (updatedRound) {
+        submitRoundToCloud(updatedRound as WeeklyRound).catch((err) => {
+          console.warn('Failed to submit round to Firestore', err);
+        });
+      }
+
+      return { rounds: updated };
     });
   },
 
@@ -227,7 +246,14 @@ export const useLeagueStore = create<LeagueState>((set, get) => ({
   startWeek: (week: number) => {
     set((state) => {
       if (!state.activeWeeks.includes(week)) {
-        return { activeWeeks: [...state.activeWeeks, week] };
+        const updated = { activeWeeks: [...state.activeWeeks, week] };
+
+        // persist week active to Firestore
+        setWeekActiveInCloud(week, true).catch((err) => {
+          console.warn('Failed to activate week in Firestore', err);
+        });
+
+        return updated;
       }
       return state;
     });

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useLeagueStore } from '../store/leagueStore';
 import '../styles/Auth.css';
 
 interface AuthProps {
   onSuccess: () => void;
 }
+
+import { signIn, signUp } from '../services/auth';
 
 export const Login: React.FC<AuthProps> = ({ onSuccess }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,25 +17,21 @@ export const Login: React.FC<AuthProps> = ({ onSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { login, register } = useLeagueStore();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-    if (login(username, password)) {
+    try {
+      await signIn(email, password);
       setSuccess('Logged in successfully!');
-      setTimeout(() => {
-        onSuccess();
-      }, 500);
-    } else {
-      setError('Invalid username or password');
-      setPassword('');
+      setTimeout(() => onSuccess(), 400);
+    } catch (err: any) {
+      setError(err.message || 'Failed to sign in');
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
@@ -54,13 +51,12 @@ export const Login: React.FC<AuthProps> = ({ onSuccess }) => {
       return;
     }
 
-    if (register(username, email, name, password)) {
+    try {
+      await signUp(email, password, username, name);
       setSuccess('Account created! Logging you in...');
-      setTimeout(() => {
-        onSuccess();
-      }, 500);
-    } else {
-      setError('Username already exists');
+      setTimeout(() => onSuccess(), 600);
+    } catch (err: any) {
+      setError(err.message || 'Registration failed');
     }
   };
 

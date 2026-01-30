@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Players collection: reads allowed, writes require auth
+    match /players/{playerId} {
+      allow read: if true;
+      // Allow a user to create/update their own player doc, or a commissioner to write any player doc
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.id;
+      allow update: if request.auth != null && (request.auth.uid == resource.data.id || get(/databases/$(database)/documents/players/$(request.auth.uid)).data.isCommissioner == true);
+      allow delete: if false;
+    }
+
+    // Rounds: reads allowed; create allowed for authenticated users for their own rounds; updates allowed for owner or commissioners
+    match /rounds/{roundId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.playerId;
+      allow update: if request.auth != null && (request.auth.uid == resource.data.playerId || get(/databases/$(database)/documents/players/$(request.auth.uid)).data.isCommissioner == true);
+      allow delete: if false;
+    }
+
+    // Weeks docs store active boolean for each week
+    match /weeks/{weekId} {
+      allow read: if true;
+      allow write: if request.auth != null && get(/databases/$(database)/documents/players/$(request.auth.uid)).data.isCommissioner == true;
+    }
+  }
+}
